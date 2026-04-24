@@ -1,101 +1,90 @@
-import Image from "next/image";
+import type { DashboardStats } from '@/lib/types'
 
-export default function Home() {
+async function getStats(): Promise<DashboardStats | null> {
+  try {
+    const baseUrl = process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:3000'
+    const res = await fetch(`${baseUrl}/api/stats`, { cache: 'no-store' })
+    if (!res.ok) return null
+    return res.json()
+  } catch {
+    return null
+  }
+}
+
+const StatCard = ({ label, value, sub }: { label: string; value: string | number; sub?: string }) => (
+  <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+    <p className="text-sm text-gray-500 mb-1">{label}</p>
+    <p className="text-3xl font-bold text-gray-900">{value}</p>
+    {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
+  </div>
+)
+
+export default async function OverviewPage() {
+  const stats = await getStats()
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between">
+        <h1 className="text-xl font-bold text-gray-900">⭐ Avis Google — Dashboard</h1>
+        <div className="flex gap-6 text-sm">
+          <a href="/" className="font-medium text-blue-600">Aperçu</a>
+          <a href="/campaigns" className="text-gray-500 hover:text-gray-900">Campagnes</a>
+          <a href="/send" className="text-gray-500 hover:text-gray-900">Envoyer</a>
+          <a href="/settings" className="text-gray-500 hover:text-gray-900">Paramètres</a>
         </div>
+      </nav>
+
+      <main className="max-w-5xl mx-auto px-8 py-10">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900">Vue d&apos;ensemble</h2>
+          <p className="text-gray-500 mt-1">Suivi des sollicitations d&apos;avis Google</p>
+        </div>
+
+        {!stats ? (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-yellow-800 text-sm">
+            ⚠️ Impossible de charger les statistiques. Vérifiez votre configuration Supabase dans <code className="bg-yellow-100 px-1 rounded">.env.local</code>.
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+              <StatCard label="Total envois" value={stats.total} />
+              <StatCard
+                label="En attente de réponse"
+                value={stats.sent + stats.reminder_sent}
+                sub={`dont ${stats.reminder_sent} relancés`}
+              />
+              <StatCard label="Avis obtenus" value={stats.reviewed} />
+              <StatCard label="Taux de conversion" value={`${stats.conversion_rate}%`} />
+            </div>
+
+            <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+              <h3 className="text-sm font-semibold text-gray-700 mb-6">Envois par semaine</h3>
+              {stats.weekly.every(w => w.count === 0) ? (
+                <p className="text-gray-400 text-sm">Aucune donnée pour les 8 dernières semaines</p>
+              ) : (
+                <div className="flex items-end gap-2 h-32">
+                  {stats.weekly.map(({ week, count }) => {
+                    const max = Math.max(...stats.weekly.map(w => w.count), 1)
+                    const pct = Math.round((count / max) * 100)
+                    return (
+                      <div key={week} className="flex flex-col items-center flex-1 gap-1">
+                        <span className="text-xs text-gray-500">{count > 0 ? count : ''}</span>
+                        <div
+                          className="w-full bg-blue-500 rounded-t transition-all"
+                          style={{ height: `${pct}%`, minHeight: count > 0 ? '4px' : '0' }}
+                        />
+                        <span className="text-xs text-gray-400">{week}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
     </div>
-  );
+  )
 }
