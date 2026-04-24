@@ -33,7 +33,7 @@ export default function SettingsPage() {
   const supabase = createClient()
 
   useEffect(() => {
-    createClient().from('businesses').select('*').order('name').then(({ data }) => {
+    createClient().from('review_businesses').select('*').order('name').then(({ data }) => {
       if (data) setBusinesses(data as Business[])
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -79,9 +79,9 @@ export default function SettingsPage() {
 
     let error
     if (selected) {
-      ;({ error } = await supabase.from('businesses').update(payload).eq('id', selected.id))
+      ;({ error } = await supabase.from('review_businesses').update(payload).eq('id', selected.id))
     } else {
-      const { data, error: err } = await supabase.from('businesses').insert(payload).select().single()
+      const { data, error: err } = await supabase.from('review_businesses').insert(payload).select().single()
       error = err
       if (data) {
         setBusinesses(prev => [...prev, data as Business])

@@ -12,7 +12,7 @@ export default function SendPage() {
 
   useEffect(() => {
     const supabase = createClient()
-    supabase.from('businesses').select('id, name').order('name').then(({ data }) => {
+    supabase.from('review_businesses').select('id, name').order('name').then(({ data }) => {
       if (data) setBusinesses(data as Business[])
     })
   }, [])

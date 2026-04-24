@@ -29,7 +29,7 @@ export function CampaignTable({ initialCampaigns }: { initialCampaigns: Campaign
     setMarkingId(id)
     const supabase = createClient()
     await supabase
-      .from('campaigns')
+      .from('review_campaigns')
       .update({ status: 'reviewed', reviewed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
       .eq('id', id)
     setCampaigns(prev => prev.map(c => c.id === id ? { ...c, status: 'reviewed' as CampaignStatus, reviewed_at: new Date().toISOString() } : c))

@@ -15,7 +15,7 @@ async function getStats(): Promise<DashboardStats | null> {
   try {
     const supabase = createClient()
     const { data: campaigns, error } = await supabase
-      .from('campaigns')
+      .from('review_campaigns')
       .select('status, created_at')
 
     if (error || !campaigns) return null

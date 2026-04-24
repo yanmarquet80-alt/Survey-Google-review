@@ -5,7 +5,7 @@ export async function GET() {
   const supabase = createClient()
 
   const { data: campaigns } = await supabase
-    .from('campaigns')
+    .from('review_campaigns')
     .select('status, created_at')
 
   if (!campaigns) return NextResponse.json({ error: 'Failed to fetch' }, { status: 500 })

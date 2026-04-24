@@ -5,8 +5,8 @@ import { CampaignTable } from '@/components/campaigns/CampaignTable'
 async function getCampaigns(): Promise<Campaign[]> {
   const supabase = createClient()
   const { data } = await supabase
-    .from('campaigns')
-    .select('*, clients(name, email)')
+    .from('review_campaigns')
+    .select('*, clients:review_clients(name, email)')
     .order('created_at', { ascending: false })
     .limit(100)
   return (data as Campaign[]) ?? []
