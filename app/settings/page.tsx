@@ -163,12 +163,12 @@ export default function SettingsPage() {
                   <div>
                     <label className="block text-xs font-medium text-gray-600 mb-1">Nom</label>
                     <input required type="text" value={form.name} onChange={f('name')}
-                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-600 mb-1">Type</label>
                     <select value={form.type} onChange={f('type')}
-                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                       {BUSINESS_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                     </select>
                   </div>
@@ -178,20 +178,20 @@ export default function SettingsPage() {
                   <label className="block text-xs font-medium text-gray-600 mb-1">URL Google Reviews</label>
                   <input required type="url" value={form.google_review_url} onChange={f('google_review_url')}
                     placeholder="https://g.page/r/..."
-                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-medium text-gray-600 mb-1">Email propriétaire</label>
                     <input required type="email" value={form.owner_email} onChange={f('owner_email')}
-                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-600 mb-1">Email expéditeur (SMTP from)</label>
                     <input type="email" value={form.smtp_from} onChange={f('smtp_from')}
                       placeholder="noreply@etablissement.com"
-                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
                   </div>
                 </div>
 
@@ -200,21 +200,21 @@ export default function SettingsPage() {
                     Délai de relance (jours)
                   </label>
                   <input type="number" min={1} max={30} value={form.reminder_delay_days} onChange={f('reminder_delay_days')}
-                    className="w-32 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-32 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
 
                 <div>
                   <label className="block text-xs font-medium text-gray-600 mb-1">Objet email initial <span className="text-gray-400">(laissez vide pour valeur par défaut)</span></label>
                   <input type="text" value={form.email_subject} onChange={f('email_subject')}
                     placeholder="Merci pour votre visite !"
-                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
 
                 <div>
                   <label className="block text-xs font-medium text-gray-600 mb-1">Objet email de relance <span className="text-gray-400">(laissez vide pour valeur par défaut)</span></label>
                   <input type="text" value={form.reminder_subject} onChange={f('reminder_subject')}
                     placeholder="⏰ Rappel — votre avis nous tient à cœur"
-                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                    className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
                 </div>
 
                 {msg && (

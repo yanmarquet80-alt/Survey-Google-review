@@ -68,7 +68,7 @@ export default function SendPage() {
                 required
                 value={form.business_id}
                 onChange={e => setForm(f => ({ ...f, business_id: e.target.value }))}
-                className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Sélectionner un établissement…</option>
                 {businesses.map(b => (
@@ -85,7 +85,7 @@ export default function SendPage() {
                 placeholder="Marie Dupont"
                 value={form.client_name}
                 onChange={e => setForm(f => ({ ...f, client_name: e.target.value }))}
-                className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -97,7 +97,7 @@ export default function SendPage() {
                 placeholder="marie@email.com"
                 value={form.client_email}
                 onChange={e => setForm(f => ({ ...f, client_email: e.target.value }))}
-                className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -110,7 +110,7 @@ export default function SendPage() {
                 placeholder="06 12 34 56 78"
                 value={form.client_phone}
                 onChange={e => setForm(f => ({ ...f, client_phone: e.target.value }))}
-                className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
