@@ -6,6 +6,7 @@ import Link from 'next/link'
 const NAV = [
   { href: '/', label: 'Aperçu', icon: '📊' },
   { href: '/campaigns', label: 'Campagnes', icon: '📋' },
+  { href: '/responses', label: 'Réponses', icon: '💬' },
   { href: '/send', label: 'Envoyer', icon: '📨' },
   { href: '/settings', label: 'Paramètres', icon: '⚙️' },
 ]

@@ -57,6 +57,28 @@ export interface PlatformStats {
   conversion_rate: number
 }
 
+export type ResponseStatus = 'pending' | 'published' | 'dismissed'
+
+export type ReviewSentiment = 'positive' | 'mixed' | 'neutral' | 'negative' | 'crisis'
+
+export interface ReviewResponse {
+  id: string
+  business_id: string
+  platform: Platform
+  reviewer_name: string | null
+  reviewer_rating: number | null
+  review_text: string | null
+  review_date: string | null
+  sentiment: ReviewSentiment
+  reply_text: string | null
+  manage_url: string | null
+  status: ResponseStatus
+  published_at: string | null
+  created_at: string
+  updated_at: string
+  businesses?: { name: string } | null
+}
+
 export interface DashboardStats {
   total: number
   sent: number
