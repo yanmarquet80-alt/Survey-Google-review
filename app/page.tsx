@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import type { DashboardStats } from '@/lib/types'
+import type { DashboardStats, Platform } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,7 +16,7 @@ async function getStats(): Promise<DashboardStats | null> {
     const supabase = createClient()
     const { data: campaigns, error } = await supabase
       .from('review_campaigns')
-      .select('status, created_at')
+      .select('status, created_at, platform')
 
     if (error || !campaigns) return null
 
@@ -40,7 +40,21 @@ async function getStats(): Promise<DashboardStats | null> {
     })
     const weekly = Object.entries(weekMap).map(([week, count]) => ({ week, count }))
 
-    return { total, sent, reminder_sent, reviewed, conversion_rate, weekly }
+    const platforms: Platform[] = ['google', 'tripadvisor', 'trustpilot']
+    const by_platform = Object.fromEntries(
+      platforms.map(p => {
+        const pc = campaigns.filter(c => (c.platform ?? 'google') === p)
+        const pTotal = pc.length
+        const pReviewed = pc.filter(c => c.status === 'reviewed').length
+        return [p, {
+          total: pTotal,
+          reviewed: pReviewed,
+          conversion_rate: pTotal > 0 ? Math.round((pReviewed / pTotal) * 100) : 0,
+        }]
+      })
+    ) as DashboardStats['by_platform']
+
+    return { total, sent, reminder_sent, reviewed, conversion_rate, weekly, by_platform }
   } catch {
     return null
   }
@@ -54,70 +68,122 @@ const StatCard = ({ label, value, sub }: { label: string; value: string | number
   </div>
 )
 
+const PLATFORM_CONFIG = {
+  google: {
+    label: 'Google',
+    icon: '🔵',
+    accent: 'border-blue-200 bg-blue-50',
+    badge: 'bg-blue-100 text-blue-700',
+  },
+  tripadvisor: {
+    label: 'TripAdvisor',
+    icon: '🟢',
+    accent: 'border-teal-200 bg-teal-50',
+    badge: 'bg-teal-100 text-teal-700',
+  },
+  trustpilot: {
+    label: 'TrustPilot',
+    icon: '✅',
+    accent: 'border-green-200 bg-green-50',
+    badge: 'bg-green-100 text-green-700',
+  },
+} as const
+
 export default async function OverviewPage() {
   const stats = await getStats()
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white border-b border-gray-100 px-8 py-4 flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-900">⭐ Avis Google — Dashboard</h1>
-        <div className="flex gap-6 text-sm">
-          <a href="/" className="font-medium text-blue-600">Aperçu</a>
-          <a href="/campaigns" className="text-gray-500 hover:text-gray-900">Campagnes</a>
-          <a href="/send" className="text-gray-500 hover:text-gray-900">Envoyer</a>
-          <a href="/settings" className="text-gray-500 hover:text-gray-900">Paramètres</a>
-        </div>
-      </nav>
+    <main className="px-8 py-10">
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-gray-900">Vue d&apos;ensemble</h2>
+        <p className="text-gray-500 mt-1">Toutes plateformes — Google, TripAdvisor, TrustPilot</p>
+      </div>
 
-      <main className="max-w-5xl mx-auto px-8 py-10">
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">Vue d&apos;ensemble</h2>
-          <p className="text-gray-500 mt-1">Suivi des sollicitations d&apos;avis Google</p>
+      {!stats ? (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-yellow-800 text-sm">
+          ⚠️ Impossible de charger les statistiques. Vérifiez votre configuration Supabase dans <code className="bg-yellow-100 px-1 rounded">.env.local</code>.
         </div>
-
-        {!stats ? (
-          <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-yellow-800 text-sm">
-            ⚠️ Impossible de charger les statistiques. Vérifiez votre configuration Supabase dans <code className="bg-yellow-100 px-1 rounded">.env.local</code>.
+      ) : (
+        <>
+          {/* Stats globales */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <StatCard label="Total envois" value={stats.total} />
+            <StatCard
+              label="En attente de réponse"
+              value={stats.sent + stats.reminder_sent}
+              sub={`dont ${stats.reminder_sent} relancés`}
+            />
+            <StatCard label="Avis obtenus" value={stats.reviewed} />
+            <StatCard label="Taux de conversion" value={`${stats.conversion_rate}%`} />
           </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-              <StatCard label="Total envois" value={stats.total} />
-              <StatCard
-                label="En attente de réponse"
-                value={stats.sent + stats.reminder_sent}
-                sub={`dont ${stats.reminder_sent} relancés`}
-              />
-              <StatCard label="Avis obtenus" value={stats.reviewed} />
-              <StatCard label="Taux de conversion" value={`${stats.conversion_rate}%`} />
-            </div>
 
-            <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-              <h3 className="text-sm font-semibold text-gray-700 mb-6">Envois par semaine</h3>
-              {stats.weekly.every(w => w.count === 0) ? (
-                <p className="text-gray-400 text-sm">Aucune donnée pour les 8 dernières semaines</p>
-              ) : (
-                <div className="flex items-end gap-2 h-32">
-                  {stats.weekly.map(({ week, count }) => {
-                    const max = Math.max(...stats.weekly.map(w => w.count), 1)
-                    const pct = Math.round((count / max) * 100)
-                    return (
-                      <div key={week} className="flex flex-col items-center flex-1 gap-1">
-                        <span className="text-xs text-gray-500">{count > 0 ? count : ''}</span>
+          {/* Stats par plateforme */}
+          <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-3">Par plateforme</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            {(['google', 'tripadvisor', 'trustpilot'] as Platform[]).map(p => {
+              const cfg = PLATFORM_CONFIG[p]
+              const ps = stats.by_platform[p]
+              return (
+                <div key={p} className={`rounded-2xl border p-5 ${cfg.accent}`}>
+                  <div className="flex items-center gap-2 mb-3">
+                    <span>{cfg.icon}</span>
+                    <span className="font-semibold text-gray-800 text-sm">{cfg.label}</span>
+                  </div>
+                  <div className="flex items-end justify-between">
+                    <div>
+                      <p className="text-3xl font-bold text-gray-900">{ps.reviewed}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">avis obtenus</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xl font-bold text-gray-700">{ps.conversion_rate}%</p>
+                      <p className="text-xs text-gray-500">conversion</p>
+                    </div>
+                  </div>
+                  {ps.total > 0 && (
+                    <div className="mt-3">
+                      <div className="w-full bg-white rounded-full h-1.5">
                         <div
-                          className="w-full bg-blue-500 rounded-t transition-all"
-                          style={{ height: `${pct}%`, minHeight: count > 0 ? '4px' : '0' }}
+                          className="h-1.5 rounded-full bg-current opacity-60"
+                          style={{ width: `${ps.conversion_rate}%` }}
                         />
-                        <span className="text-xs text-gray-400">{week}</span>
                       </div>
-                    )
-                  })}
+                      <p className="text-xs text-gray-400 mt-1">{ps.total} envois au total</p>
+                    </div>
+                  )}
+                  {ps.total === 0 && (
+                    <p className="text-xs text-gray-400 mt-3">Aucun envoi sur cette plateforme</p>
+                  )}
                 </div>
-              )}
-            </div>
-          </>
-        )}
-      </main>
-    </div>
+              )
+            })}
+          </div>
+
+          {/* Graphique hebdomadaire */}
+          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+            <h3 className="text-sm font-semibold text-gray-700 mb-6">Envois par semaine (toutes plateformes)</h3>
+            {stats.weekly.every(w => w.count === 0) ? (
+              <p className="text-gray-400 text-sm">Aucune donnée pour les 8 dernières semaines</p>
+            ) : (
+              <div className="flex items-end gap-2 h-32">
+                {stats.weekly.map(({ week, count }) => {
+                  const max = Math.max(...stats.weekly.map(w => w.count), 1)
+                  const pct = Math.round((count / max) * 100)
+                  return (
+                    <div key={week} className="flex flex-col items-center flex-1 gap-1">
+                      <span className="text-xs text-gray-500">{count > 0 ? count : ''}</span>
+                      <div
+                        className="w-full bg-blue-500 rounded-t transition-all"
+                        style={{ height: `${pct}%`, minHeight: count > 0 ? '4px' : '0' }}
+                      />
+                      <span className="text-xs text-gray-400">{week}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+        </>
+      )}
+    </main>
   )
 }

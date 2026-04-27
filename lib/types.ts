@@ -1,3 +1,5 @@
+export type Platform = 'google' | 'tripadvisor' | 'trustpilot'
+
 export type BusinessType = 'restaurant' | 'hotel' | 'health' | 'beauty' | 'retail' | 'other'
 
 export type CampaignStatus = 'pending' | 'sent' | 'reminder_sent' | 'reviewed' | 'expired'
@@ -16,6 +18,9 @@ export interface Business {
   name: string
   type: BusinessType
   google_review_url: string
+  tripadvisor_url?: string | null
+  trustpilot_url?: string | null
+  platform_priority: Platform
   owner_email: string
   config: BusinessConfig
   created_at: string
@@ -35,6 +40,7 @@ export interface Campaign {
   id: string
   client_id: string
   business_id: string
+  platform: Platform
   status: CampaignStatus
   sent_at: string | null
   reminder_at: string | null
@@ -45,6 +51,12 @@ export interface Campaign {
   clients?: Pick<Client, 'name' | 'email'>
 }
 
+export interface PlatformStats {
+  total: number
+  reviewed: number
+  conversion_rate: number
+}
+
 export interface DashboardStats {
   total: number
   sent: number
@@ -52,4 +64,5 @@ export interface DashboardStats {
   reviewed: number
   conversion_rate: number
   weekly: { week: string; count: number }[]
+  by_platform: Record<Platform, PlatformStats>
 }

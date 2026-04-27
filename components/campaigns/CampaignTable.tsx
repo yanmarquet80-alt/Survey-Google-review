@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import type { Campaign, CampaignStatus } from '@/lib/types'
+import type { Campaign, CampaignStatus, Platform } from '@/lib/types'
 import { StatusBadge } from './StatusBadge'
 import { createClient } from '@/lib/supabase/client'
 
@@ -12,6 +12,21 @@ const TABS: { label: string; value: CampaignStatus | 'all' }[] = [
   { label: 'Avis laissés', value: 'reviewed' },
   { label: 'Expirés', value: 'expired' },
 ]
+
+const PLATFORM_BADGE: Record<Platform, { label: string; classes: string }> = {
+  google: { label: 'Google', classes: 'bg-blue-100 text-blue-700' },
+  tripadvisor: { label: 'TripAdvisor', classes: 'bg-teal-100 text-teal-700' },
+  trustpilot: { label: 'TrustPilot', classes: 'bg-green-100 text-green-700' },
+}
+
+function PlatformBadge({ platform }: { platform: Platform }) {
+  const { label, classes } = PLATFORM_BADGE[platform] ?? PLATFORM_BADGE.google
+  return (
+    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${classes}`}>
+      {label}
+    </span>
+  )
+}
 
 function formatDate(iso: string | null) {
   if (!iso) return '—'
@@ -59,6 +74,7 @@ export function CampaignTable({ initialCampaigns }: { initialCampaigns: Campaign
           <thead>
             <tr className="border-b border-gray-100 text-left text-gray-500 text-xs uppercase tracking-wider">
               <th className="pb-3 pr-4 font-medium">Client</th>
+              <th className="pb-3 pr-4 font-medium">Plateforme</th>
               <th className="pb-3 pr-4 font-medium">Statut</th>
               <th className="pb-3 pr-4 font-medium">Envoyé le</th>
               <th className="pb-3 pr-4 font-medium">Relance le</th>
@@ -68,7 +84,7 @@ export function CampaignTable({ initialCampaigns }: { initialCampaigns: Campaign
           <tbody className="divide-y divide-gray-50">
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={5} className="py-10 text-center text-gray-400">Aucune campagne</td>
+                <td colSpan={6} className="py-10 text-center text-gray-400">Aucune campagne</td>
               </tr>
             )}
             {filtered.map(campaign => (
@@ -76,6 +92,9 @@ export function CampaignTable({ initialCampaigns }: { initialCampaigns: Campaign
                 <td className="py-3 pr-4">
                   <div className="font-medium text-gray-900">{campaign.clients?.name ?? '—'}</div>
                   <div className="text-gray-400 text-xs">{campaign.clients?.email ?? '—'}</div>
+                </td>
+                <td className="py-3 pr-4">
+                  <PlatformBadge platform={campaign.platform ?? 'google'} />
                 </td>
                 <td className="py-3 pr-4">
                   <StatusBadge status={campaign.status} />
