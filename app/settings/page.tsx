@@ -145,7 +145,7 @@ export default function SettingsPage() {
 
       <div className="grid grid-cols-3 gap-6">
         <div className="col-span-1">
-          <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+          <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-md">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-gray-700">Établissements</h3>
               <button
@@ -176,7 +176,7 @@ export default function SettingsPage() {
         </div>
 
         <div className="col-span-2">
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-md">
             <h3 className="text-sm font-semibold text-gray-700 mb-5">
               {selected ? `Modifier — ${selected.name}` : 'Nouvel établissement'}
             </h3>

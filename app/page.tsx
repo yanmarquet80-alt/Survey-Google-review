@@ -60,9 +60,11 @@ async function getStats(): Promise<DashboardStats | null> {
   }
 }
 
-const StatCard = ({ label, value, sub }: { label: string; value: string | number; sub?: string }) => (
-  <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-    <p className="text-sm text-gray-500 mb-1">{label}</p>
+const STAT_ACCENTS = ['border-t-blue-500', 'border-t-amber-500', 'border-t-emerald-500', 'border-t-violet-500']
+
+const StatCard = ({ label, value, sub, accent }: { label: string; value: string | number; sub?: string; accent: string }) => (
+  <div className={`bg-white rounded-2xl border border-gray-200 border-t-4 ${accent} p-6 shadow-md`}>
+    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">{label}</p>
     <p className="text-3xl font-bold text-gray-900">{value}</p>
     {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
   </div>
@@ -96,7 +98,7 @@ export default async function OverviewPage() {
     <main className="px-8 py-10">
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-gray-900">Vue d&apos;ensemble</h2>
-        <p className="text-gray-500 mt-1">Toutes plateformes — Google, TripAdvisor, TrustPilot</p>
+        <p className="text-gray-500 mt-1 text-sm">Toutes plateformes · Google, TripAdvisor, TrustPilot</p>
       </div>
 
       {!stats ? (
@@ -107,14 +109,15 @@ export default async function OverviewPage() {
         <>
           {/* Stats globales */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <StatCard label="Total envois" value={stats.total} />
+            <StatCard label="Total envois" value={stats.total} accent="border-t-blue-500" />
             <StatCard
               label="En attente de réponse"
               value={stats.sent + stats.reminder_sent}
               sub={`dont ${stats.reminder_sent} relancés`}
+              accent="border-t-amber-500"
             />
-            <StatCard label="Avis obtenus" value={stats.reviewed} />
-            <StatCard label="Taux de conversion" value={`${stats.conversion_rate}%`} />
+            <StatCard label="Avis obtenus" value={stats.reviewed} accent="border-t-emerald-500" />
+            <StatCard label="Taux de conversion" value={`${stats.conversion_rate}%`} accent="border-t-violet-500" />
           </div>
 
           {/* Stats par plateforme */}
@@ -124,7 +127,7 @@ export default async function OverviewPage() {
               const cfg = PLATFORM_CONFIG[p]
               const ps = stats.by_platform[p]
               return (
-                <div key={p} className={`rounded-2xl border p-5 ${cfg.accent}`}>
+                <div key={p} className={`rounded-2xl border-2 p-5 shadow-sm ${cfg.accent}`}>
                   <div className="flex items-center gap-2 mb-3">
                     <span>{cfg.icon}</span>
                     <span className="font-semibold text-gray-800 text-sm">{cfg.label}</span>
@@ -159,7 +162,7 @@ export default async function OverviewPage() {
           </div>
 
           {/* Graphique hebdomadaire */}
-          <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-md">
             <h3 className="text-sm font-semibold text-gray-700 mb-6">Envois par semaine (toutes plateformes)</h3>
             {stats.weekly.every(w => w.count === 0) ? (
               <p className="text-gray-400 text-sm">Aucune donnée pour les 8 dernières semaines</p>

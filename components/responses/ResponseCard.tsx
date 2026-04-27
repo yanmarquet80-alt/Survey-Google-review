@@ -7,36 +7,57 @@ const PLATFORM_CONFIG: Record<Platform, { label: string; icon: string; badgeClas
   google: {
     label: 'Google',
     icon: '🔵',
-    badgeClass: 'bg-blue-100 text-blue-700',
+    badgeClass: 'bg-blue-100 text-blue-700 border border-blue-200',
     linkLabel: 'Ouvrir Google Business',
   },
   tripadvisor: {
     label: 'TripAdvisor',
     icon: '🟢',
-    badgeClass: 'bg-teal-100 text-teal-700',
+    badgeClass: 'bg-teal-100 text-teal-700 border border-teal-200',
     linkLabel: 'Ouvrir TripAdvisor',
   },
   trustpilot: {
     label: 'TrustPilot',
     icon: '✅',
-    badgeClass: 'bg-green-100 text-green-700',
+    badgeClass: 'bg-green-100 text-green-700 border border-green-200',
     linkLabel: 'Ouvrir TrustPilot',
   },
 }
 
-const SENTIMENT_CONFIG: Record<ReviewSentiment, { label: string; badgeClass: string }> = {
-  positive: { label: 'Positif', badgeClass: 'bg-emerald-100 text-emerald-700' },
-  mixed: { label: 'Mixte', badgeClass: 'bg-yellow-100 text-yellow-700' },
-  neutral: { label: 'Neutre', badgeClass: 'bg-gray-100 text-gray-600' },
-  negative: { label: 'Négatif', badgeClass: 'bg-orange-100 text-orange-700' },
-  crisis: { label: 'CRISE', badgeClass: 'bg-red-100 text-red-700' },
+const SENTIMENT_CONFIG: Record<ReviewSentiment, { label: string; badgeClass: string; leftBorder: string }> = {
+  positive: {
+    label: 'Positif',
+    badgeClass: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+    leftBorder: 'border-l-emerald-400',
+  },
+  mixed: {
+    label: 'Mixte',
+    badgeClass: 'bg-amber-100 text-amber-700 border border-amber-200',
+    leftBorder: 'border-l-amber-400',
+  },
+  neutral: {
+    label: 'Neutre',
+    badgeClass: 'bg-gray-100 text-gray-600 border border-gray-200',
+    leftBorder: 'border-l-gray-300',
+  },
+  negative: {
+    label: 'Négatif',
+    badgeClass: 'bg-orange-100 text-orange-700 border border-orange-200',
+    leftBorder: 'border-l-orange-400',
+  },
+  crisis: {
+    label: 'CRISE',
+    badgeClass: 'bg-red-100 text-red-700 border border-red-300',
+    leftBorder: 'border-l-red-500',
+  },
 }
 
 function StarRating({ rating }: { rating: number | null }) {
   if (!rating) return null
   return (
-    <span className="text-sm text-yellow-500">
-      {'★'.repeat(rating)}{'☆'.repeat(5 - rating)}
+    <span className="text-sm text-amber-400 tracking-tight">
+      {'★'.repeat(rating)}
+      <span className="text-gray-200">{'★'.repeat(5 - rating)}</span>
     </span>
   )
 }
@@ -77,98 +98,102 @@ export function ResponseCard({ response, onStatusChange }: Props) {
     }
   }
 
-  const cardBorder = isCrisis
-    ? 'border-red-200 bg-red-50/30'
-    : isPublished
-    ? 'border-green-200 bg-green-50/20 opacity-75'
-    : isDismissed
-    ? 'border-gray-200 opacity-60'
-    : 'border-gray-100 bg-white'
-
   const formattedDate = response.review_date
     ? new Date(response.review_date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
     : response.created_at
     ? new Date(response.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
     : null
 
+  // Base card style: white with colored left border by sentiment
+  const opacity = isPublished || isDismissed ? 'opacity-70' : ''
+  const cardBase = `bg-white rounded-xl border border-gray-200 border-l-4 ${sentiment.leftBorder} shadow-md transition-all ${opacity}`
+
   return (
-    <div className={`rounded-2xl border p-6 shadow-sm transition-all ${cardBorder}`}>
+    <div className={cardBase}>
       {/* Header */}
-      <div className="flex items-start justify-between gap-4 mb-4">
+      <div className="flex items-start justify-between gap-4 px-5 pt-4 pb-3 border-b border-gray-100">
         <div className="flex flex-wrap items-center gap-2">
-          <span className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full ${platform.badgeClass}`}>
+          <span className={`inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full ${platform.badgeClass}`}>
             {platform.icon} {platform.label}
           </span>
-          <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${sentiment.badgeClass}`}>
+          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${sentiment.badgeClass}`}>
             {sentiment.label}
           </span>
           <StarRating rating={response.reviewer_rating} />
         </div>
-        <div className="text-right shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
           {isPublished && (
-            <span className="text-xs text-green-600 font-medium">✅ Publié</span>
+            <span className="text-xs text-emerald-600 font-semibold bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">✅ Publié</span>
           )}
           {isDismissed && (
-            <span className="text-xs text-gray-400 font-medium">🚫 Ignoré</span>
+            <span className="text-xs text-gray-400 font-semibold bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full">🚫 Ignoré</span>
           )}
         </div>
       </div>
 
       {/* Meta */}
-      <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
+      <div className="px-5 py-2.5 flex items-center gap-2 text-xs text-gray-500 bg-gray-50/60 border-b border-gray-100">
         {response.businesses?.name && (
-          <span className="font-medium text-gray-700">{response.businesses.name}</span>
+          <span className="font-semibold text-gray-700">{response.businesses.name}</span>
         )}
-        {response.businesses?.name && <span>·</span>}
+        {response.businesses?.name && <span className="text-gray-300">·</span>}
         <span>{response.reviewer_name ?? 'Anonyme'}</span>
-        {formattedDate && <><span>·</span><span>{formattedDate}</span></>}
+        {formattedDate && (
+          <>
+            <span className="text-gray-300">·</span>
+            <span>{formattedDate}</span>
+          </>
+        )}
       </div>
 
-      {/* Alerte crise */}
-      {isCrisis && (
-        <div className="mb-4 rounded-xl bg-red-100 border border-red-200 px-4 py-3 text-sm text-red-800 font-medium">
-          ⚠️ Avis de crise détecté — Ne pas répondre publiquement sans consultation préalable. Gérer directement avec l&apos;équipe.
-        </div>
-      )}
-
-      {/* Review text */}
-      {response.review_text && (
-        <div className="mb-4">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">Avis client</p>
-          <p className="text-sm text-gray-700 leading-relaxed bg-gray-50 rounded-xl px-4 py-3 border border-gray-100">
-            {response.review_text}
-          </p>
-        </div>
-      )}
-
-      {/* Reply */}
-      {!isCrisis && response.reply_text && (
-        <div className="mb-4">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1.5">✍️ Réponse suggérée</p>
-          <div className="relative">
-            <p className="text-sm text-gray-800 leading-relaxed bg-white rounded-xl px-4 py-3 border border-gray-200 pr-12 whitespace-pre-wrap">
-              {response.reply_text}
-            </p>
-            <button
-              onClick={handleCopy}
-              className="absolute top-2.5 right-2.5 p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-700"
-              title="Copier la réponse"
-            >
-              {copied ? '✅' : '📋'}
-            </button>
+      <div className="px-5 py-4 space-y-4">
+        {/* Alerte crise */}
+        {isCrisis && (
+          <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800 font-medium flex items-start gap-2">
+            <span className="mt-0.5">⚠️</span>
+            <span>Avis de crise détecté — Ne pas répondre publiquement sans consultation préalable. Gérer directement avec l&apos;équipe.</span>
           </div>
-          {copied && (
-            <p className="text-xs text-green-600 mt-1 ml-1">Copié dans le presse-papier !</p>
-          )}
-        </div>
-      )}
+        )}
+
+        {/* Review text */}
+        {response.review_text && (
+          <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">Avis client</p>
+            <p className="text-sm text-gray-700 leading-relaxed bg-slate-50 rounded-lg px-4 py-3 border border-slate-200 italic">
+              &ldquo;{response.review_text}&rdquo;
+            </p>
+          </div>
+        )}
+
+        {/* Reply */}
+        {!isCrisis && response.reply_text && (
+          <div>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">✍️ Réponse suggérée</p>
+            <div className="relative">
+              <div className="text-sm text-gray-800 leading-relaxed bg-white rounded-lg px-4 py-3 border border-gray-200 shadow-sm pr-12 whitespace-pre-wrap">
+                {response.reply_text}
+              </div>
+              <button
+                onClick={handleCopy}
+                className="absolute top-2.5 right-2.5 p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-700"
+                title="Copier la réponse"
+              >
+                {copied ? '✅' : '📋'}
+              </button>
+            </div>
+            {copied && (
+              <p className="text-xs text-emerald-600 font-medium mt-1.5 ml-1">Copié dans le presse-papier !</p>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Actions */}
-      <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-gray-100">
+      <div className="flex flex-wrap items-center gap-2 px-5 py-3 border-t border-gray-100 bg-gray-50/40 rounded-b-xl">
         {!isCrisis && !isPublished && (
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
+            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 transition-all shadow-sm"
           >
             {copied ? '✅ Copié !' : '📋 Copier la réponse'}
           </button>
@@ -179,7 +204,7 @@ export function ResponseCard({ response, onStatusChange }: Props) {
             href={response.manage_url}
             target="_blank"
             rel="noopener noreferrer"
-            className={`flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg transition-colors ${platform.badgeClass} hover:opacity-80`}
+            className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg transition-all shadow-sm border ${platform.badgeClass} hover:opacity-80`}
           >
             🔗 {platform.linkLabel}
           </a>
@@ -191,7 +216,7 @@ export function ResponseCard({ response, onStatusChange }: Props) {
           <button
             onClick={() => handleStatus('published')}
             disabled={loading}
-            className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors disabled:opacity-50 shadow-sm"
           >
             ✅ Marquer comme publié
           </button>
@@ -201,7 +226,7 @@ export function ResponseCard({ response, onStatusChange }: Props) {
           <button
             onClick={() => handleStatus('dismissed')}
             disabled={loading}
-            className="flex items-center gap-1.5 text-xs font-medium px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-500 transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-white border border-gray-200 hover:bg-gray-100 text-gray-500 transition-all disabled:opacity-50 shadow-sm"
           >
             🚫 Ignorer
           </button>

@@ -22,7 +22,7 @@ export default async function CampaignsPage() {
         <p className="text-gray-500 mt-1">{campaigns.length} campagne{campaigns.length !== 1 ? 's' : ''} au total</p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-md">
         <CampaignTable initialCampaigns={campaigns} />
       </div>
     </main>

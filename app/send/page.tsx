@@ -92,7 +92,7 @@ export default function SendPage() {
         <p className="text-gray-500 mt-1">Déclenche immédiatement un email via n8n</p>
       </div>
 
-      <div className="max-w-2xl bg-white rounded-2xl border border-gray-100 p-8 shadow-sm">
+      <div className="max-w-2xl bg-white rounded-2xl border border-gray-200 p-8 shadow-md">
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Établissement</label>

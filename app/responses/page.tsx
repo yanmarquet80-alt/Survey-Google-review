@@ -97,17 +97,17 @@ export default function ResponsesPage() {
       )}
 
       {/* Filtres */}
-      <div className="flex flex-wrap items-center gap-3 mb-6">
+      <div className="flex flex-wrap items-center gap-3 mb-6 bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm">
         {/* Tabs statut */}
-        <div className="flex bg-white rounded-xl border border-gray-200 p-1 gap-1">
+        <div className="flex bg-slate-100 rounded-lg border border-gray-200 p-0.5 gap-0.5">
           {STATUS_TABS.map(tab => (
             <button
               key={tab.value}
               onClick={() => setActiveStatus(tab.value)}
-              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-all ${
                 activeStatus === tab.value
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                  ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
+                  : 'text-gray-500 hover:text-gray-700'
               }`}
             >
               {tab.label}
@@ -124,7 +124,7 @@ export default function ResponsesPage() {
         <select
           value={activePlatform}
           onChange={e => setActivePlatform(e.target.value as Platform | 'all')}
-          className="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           {PLATFORM_FILTERS.map(p => (
             <option key={p.value} value={p.value}>{p.label}</option>
@@ -136,7 +136,7 @@ export default function ResponsesPage() {
           <select
             value={activeBusiness}
             onChange={e => setActiveBusiness(e.target.value)}
-            className="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="all">Tous les établissements</option>
             {businesses.map(([id, name]) => (

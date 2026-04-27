@@ -72,7 +72,7 @@ export function CampaignTable({ initialCampaigns }: { initialCampaigns: Campaign
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-gray-100 text-left text-gray-500 text-xs uppercase tracking-wider">
+            <tr className="border-b-2 border-gray-100 text-left text-gray-400 text-xs uppercase tracking-widest bg-slate-50/60">
               <th className="pb-3 pr-4 font-medium">Client</th>
               <th className="pb-3 pr-4 font-medium">Plateforme</th>
               <th className="pb-3 pr-4 font-medium">Statut</th>
@@ -81,14 +81,14 @@ export function CampaignTable({ initialCampaigns }: { initialCampaigns: Campaign
               <th className="pb-3 font-medium">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-gray-100">
             {filtered.length === 0 && (
               <tr>
                 <td colSpan={6} className="py-10 text-center text-gray-400">Aucune campagne</td>
               </tr>
             )}
             {filtered.map(campaign => (
-              <tr key={campaign.id} className="hover:bg-gray-50 transition-colors">
+              <tr key={campaign.id} className="hover:bg-slate-50 transition-colors">
                 <td className="py-3 pr-4">
                   <div className="font-medium text-gray-900">{campaign.clients?.name ?? '—'}</div>
                   <div className="text-gray-400 text-xs">{campaign.clients?.email ?? '—'}</div>
