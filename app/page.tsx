@@ -60,8 +60,6 @@ async function getStats(): Promise<DashboardStats | null> {
   }
 }
 
-const STAT_ACCENTS = ['border-t-blue-500', 'border-t-amber-500', 'border-t-emerald-500', 'border-t-violet-500']
-
 const StatCard = ({ label, value, sub, accent }: { label: string; value: string | number; sub?: string; accent: string }) => (
   <div className={`bg-white rounded-2xl border border-gray-200 border-t-4 ${accent} p-6 shadow-md`}>
     <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">{label}</p>
