@@ -15,6 +15,9 @@ export async function PATCH(
 
   const supabase = createClient()
 
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+
   const update: Record<string, unknown> = {
     status,
     updated_at: new Date().toISOString(),

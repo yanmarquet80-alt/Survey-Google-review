@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { signOut } from '@/app/actions/auth'
 
 const NAV = [
   { href: '/', label: 'Aperçu', icon: '📊' },
@@ -13,7 +14,12 @@ const NAV = [
   { href: '/settings', label: 'Paramètres', icon: '⚙️' },
 ]
 
-export function Sidebar() {
+interface SidebarProps {
+  userEmail: string
+  isAdmin: boolean
+}
+
+export function Sidebar({ userEmail, isAdmin }: SidebarProps) {
   const path = usePathname()
   const [pendingResponses, setPendingResponses] = useState(0)
 
@@ -64,8 +70,27 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="px-5 py-4 border-t border-gray-700/60">
-        <div className="text-xs text-gray-600">v2.1 — Multi-plateforme</div>
+      {/* User info + sign out */}
+      <div className="px-4 py-4 border-t border-gray-700/60 space-y-2">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-full bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-300 shrink-0">
+            {userEmail.charAt(0).toUpperCase()}
+          </div>
+          <div className="min-w-0">
+            <p className="text-xs text-gray-300 truncate">{userEmail}</p>
+            {isAdmin && (
+              <p className="text-xs text-amber-400 font-semibold">Admin</p>
+            )}
+          </div>
+        </div>
+        <form action={signOut}>
+          <button
+            type="submit"
+            className="w-full text-left text-xs text-gray-500 hover:text-gray-300 transition-colors py-1"
+          >
+            Déconnexion →
+          </button>
+        </form>
       </div>
     </aside>
   )

@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { PageHeader } from '@/components/PageHeader'
 import type { DashboardStats, Platform } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
@@ -94,10 +95,15 @@ export default async function OverviewPage() {
 
   return (
     <main className="px-8 py-10">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900">Vue d&apos;ensemble</h2>
-        <p className="text-gray-500 mt-1 text-sm">Toutes plateformes · Google, TripAdvisor, TrustPilot</p>
-      </div>
+      <PageHeader
+        title="Vue d'ensemble"
+        description="Toutes plateformes · Google, TripAdvisor, TrustPilot"
+        tutorial={[
+          { icon: '📊', label: 'Suivre le taux de conversion' },
+          { icon: '🏪', label: 'Analyser par plateforme' },
+          { icon: '📅', label: 'Identifier les semaines creuses' },
+        ]}
+      />
 
       {!stats ? (
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-yellow-800 text-sm">

@@ -13,6 +13,9 @@ function getWeek(date: Date) {
 export async function GET() {
   const supabase = createClient()
 
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+
   const { data: campaigns } = await supabase
     .from('review_campaigns')
     .select('status, created_at, platform')

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { ResponseCard } from '@/components/responses/ResponseCard'
+import { PageHeader } from '@/components/PageHeader'
 import type { ReviewResponse, Platform, ResponseStatus } from '@/lib/types'
 
 const PLATFORM_FILTERS: { value: Platform | 'all'; label: string }[] = [
@@ -69,17 +70,20 @@ export default function ResponsesPage() {
   return (
     <main className="px-8 py-10">
       {/* Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3">
-          <h2 className="text-2xl font-bold text-gray-900">Réponses aux avis</h2>
-          {pendingCount > 0 && (
-            <span className="bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
-              {pendingCount}
-            </span>
-          )}
-        </div>
-        <p className="text-gray-500 mt-1">Propositions de réponse générées par l&apos;IA — Google, TripAdvisor, TrustPilot</p>
-      </div>
+      <PageHeader
+        title="Réponses aux avis"
+        description="Propositions de réponse générées par l'IA — Google, TripAdvisor, TrustPilot"
+        badge={pendingCount > 0 ? (
+          <span className="bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+            {pendingCount}
+          </span>
+        ) : undefined}
+        tutorial={[
+          { icon: '📋', label: 'Copier la réponse' },
+          { icon: '🔗', label: 'Coller sur la plateforme' },
+          { icon: '✅', label: 'Marquer comme publié' },
+        ]}
+      />
 
       {/* Alerte crise globale */}
       {crisisCount > 0 && (

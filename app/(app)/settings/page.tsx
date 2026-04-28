@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Business, BusinessType, Platform } from '@/lib/types'
+import { PageHeader } from '@/components/PageHeader'
 
 const BUSINESS_TYPES: { value: BusinessType; label: string }[] = [
   { value: 'restaurant', label: 'Restaurant' },
@@ -48,11 +49,16 @@ export default function SettingsPage() {
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null)
+  const [isAdmin, setIsAdmin] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
-    createClient().from('review_businesses').select('*').order('name').then(({ data }) => {
+    const client = createClient()
+    client.from('review_businesses').select('*').order('name').then(({ data }) => {
       if (data) setBusinesses(data as Business[])
+    })
+    client.auth.getUser().then(({ data: { user } }) => {
+      if (user?.app_metadata?.role === 'admin') setIsAdmin(true)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -138,22 +144,29 @@ export default function SettingsPage() {
 
   return (
     <main className="px-8 py-10">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900">Paramètres</h2>
-        <p className="text-gray-500 mt-1">Gérer les établissements clients</p>
-      </div>
+      <PageHeader
+        title="Paramètres"
+        description="Configurez vos établissements, URLs d'avis et délais de relance."
+        tutorial={[
+          { icon: '➕', label: 'Créer un établissement' },
+          { icon: '🔗', label: 'Ajouter les URLs' },
+          { icon: '⏰', label: 'Régler le délai de relance' },
+        ]}
+      />
 
       <div className="grid grid-cols-3 gap-6">
         <div className="col-span-1">
           <div className="bg-white rounded-2xl border border-gray-200 p-4 shadow-md">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-semibold text-gray-700">Établissements</h3>
-              <button
-                onClick={() => selectBusiness(null)}
-                className="text-xs text-blue-600 font-medium hover:underline"
-              >
-                + Nouveau
-              </button>
+              {isAdmin && (
+                <button
+                  onClick={() => selectBusiness(null)}
+                  className="text-xs text-blue-600 font-medium hover:underline"
+                >
+                  + Nouveau
+                </button>
+              )}
             </div>
             <ul className="space-y-1">
               {businesses.map(b => (
@@ -266,13 +279,18 @@ export default function SettingsPage() {
                 </div>
               )}
 
-              <button
-                type="submit"
-                disabled={saving}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl transition-colors disabled:opacity-50 text-sm"
-              >
-                {saving ? 'Enregistrement…' : selected ? 'Mettre à jour' : "Créer l'établissement"}
-              </button>
+              {isAdmin && (
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-xl transition-colors disabled:opacity-50 text-sm"
+                >
+                  {saving ? 'Enregistrement…' : selected ? 'Mettre à jour' : "Créer l'établissement"}
+                </button>
+              )}
+              {!isAdmin && (
+                <p className="text-xs text-gray-400 text-center py-2">Lecture seule — contactez l&apos;administrateur pour modifier ces informations.</p>
+              )}
             </form>
           </div>
         </div>

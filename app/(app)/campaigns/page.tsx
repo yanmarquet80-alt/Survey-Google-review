@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import type { Campaign } from '@/lib/types'
 import { CampaignTable } from '@/components/campaigns/CampaignTable'
+import { PageHeader } from '@/components/PageHeader'
 
 async function getCampaigns(): Promise<Campaign[]> {
   const supabase = createClient()
@@ -17,10 +18,14 @@ export default async function CampaignsPage() {
 
   return (
     <main className="px-8 py-10">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900">Campagnes</h2>
-        <p className="text-gray-500 mt-1">{campaigns.length} campagne{campaigns.length !== 1 ? 's' : ''} au total</p>
-      </div>
+      <PageHeader
+        title="Campagnes"
+        description={`${campaigns.length} campagne${campaigns.length !== 1 ? 's' : ''} au total — suivi de toutes les demandes d'avis envoyées.`}
+        tutorial={[
+          { icon: '🔍', label: 'Filtrer par statut' },
+          { icon: '✓', label: "Marquer l'avis reçu manuellement" },
+        ]}
+      />
 
       <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-md">
         <CampaignTable initialCampaigns={campaigns} />

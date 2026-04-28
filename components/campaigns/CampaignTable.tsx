@@ -53,15 +53,15 @@ export function CampaignTable({ initialCampaigns }: { initialCampaigns: Campaign
 
   return (
     <div>
-      <div className="flex gap-1 mb-6 border-b border-gray-200">
+      <div className="flex bg-slate-100 rounded-lg border border-gray-200 p-0.5 gap-0.5 mb-6 w-fit">
         {TABS.map(tab => (
           <button
             key={tab.value}
             onClick={() => setActiveTab(tab.value)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-all ${
               activeTab === tab.value
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'bg-white text-gray-900 shadow-sm border border-gray-200'
+                : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             {tab.label}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Business, Platform } from '@/lib/types'
+import { PageHeader } from '@/components/PageHeader'
 
 const PLATFORM_LABELS: Record<Platform, { label: string; icon: string; color: string }> = {
   google: { label: 'Google', icon: '🔵', color: 'bg-blue-50 border-blue-200 text-blue-700' },
@@ -87,10 +88,15 @@ export default function SendPage() {
 
   return (
     <main className="px-8 py-10">
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900">Envoyer une demande d&apos;avis</h2>
-        <p className="text-gray-500 mt-1">Déclenche immédiatement un email via n8n</p>
-      </div>
+      <PageHeader
+        title="Envoyer une demande d'avis"
+        description="Déclenche immédiatement un email via n8n"
+        tutorial={[
+          { icon: '🏪', label: "Choisir l'établissement" },
+          { icon: '✉️', label: 'Saisir les infos client' },
+          { icon: '📧', label: "Envoyer — l'email part immédiatement" },
+        ]}
+      />
 
       <div className="max-w-2xl bg-white rounded-2xl border border-gray-200 p-8 shadow-md">
         <form onSubmit={handleSubmit} className="space-y-5">
