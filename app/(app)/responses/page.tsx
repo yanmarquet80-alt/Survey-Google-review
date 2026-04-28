@@ -11,6 +11,8 @@ const PLATFORM_FILTERS: { value: Platform | 'all'; label: string }[] = [
   { value: 'google', label: '🔵 Google' },
   { value: 'tripadvisor', label: '🟢 TripAdvisor' },
   { value: 'trustpilot', label: '✅ TrustPilot' },
+  { value: 'yelp', label: '🔴 Yelp' },
+  { value: 'thefork', label: '🍴 TheFork' },
 ]
 
 const STATUS_TABS: { value: ResponseStatus | 'all'; label: string }[] = [
@@ -72,7 +74,7 @@ export default function ResponsesPage() {
       {/* Header */}
       <PageHeader
         title="Réponses aux avis"
-        description="Propositions de réponse générées par l'IA — Google, TripAdvisor, TrustPilot"
+        description="Propositions de réponse générées par l'IA — Google, TripAdvisor, TrustPilot, Yelp, TheFork"
         badge={pendingCount > 0 ? (
           <span className="bg-blue-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
             {pendingCount}

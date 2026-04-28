@@ -11,6 +11,11 @@ create table if not exists review_businesses (
   type              text not null default 'other',
   -- valeurs: restaurant | hotel | health | beauty | retail | other
   google_review_url text not null,
+  tripadvisor_url   text,
+  trustpilot_url    text,
+  yelp_url          text,  -- portail Yelp Biz (réponse uniquement, pas de sollicitation - CGU)
+  thefork_url       text,  -- portail TheFork Manager (réponse uniquement, sollicitation auto par TheFork)
+  platform_priority text default 'google',
   owner_email       text not null,
   config            jsonb not null default '{}',
   -- clés config: smtp_from, reminder_delay_days, email_subject,

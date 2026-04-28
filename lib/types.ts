@@ -1,4 +1,4 @@
-export type Platform = 'google' | 'tripadvisor' | 'trustpilot'
+export type Platform = 'google' | 'tripadvisor' | 'trustpilot' | 'yelp' | 'thefork'
 
 export type BusinessType = 'restaurant' | 'hotel' | 'health' | 'beauty' | 'retail' | 'other'
 
@@ -20,6 +20,8 @@ export interface Business {
   google_review_url: string
   tripadvisor_url?: string | null
   trustpilot_url?: string | null
+  yelp_url?: string | null
+  thefork_url?: string | null
   platform_priority: Platform
   owner_email: string
   config: BusinessConfig

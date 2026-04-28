@@ -35,6 +35,8 @@ const emptyForm = {
   google_review_url: '',
   tripadvisor_url: '',
   trustpilot_url: '',
+  yelp_url: '',
+  thefork_url: '',
   platform_priority: 'google' as Platform,
   owner_email: '',
   smtp_from: '',
@@ -82,6 +84,8 @@ export default function SettingsPage() {
         google_review_url: biz.google_review_url,
         tripadvisor_url: biz.tripadvisor_url ?? '',
         trustpilot_url: biz.trustpilot_url ?? '',
+        yelp_url: biz.yelp_url ?? '',
+        thefork_url: biz.thefork_url ?? '',
         platform_priority: biz.platform_priority ?? 'google',
         owner_email: biz.owner_email,
         smtp_from: biz.config.smtp_from ?? '',
@@ -103,6 +107,8 @@ export default function SettingsPage() {
       google_review_url: form.google_review_url,
       tripadvisor_url: form.tripadvisor_url || null,
       trustpilot_url: form.trustpilot_url || null,
+      yelp_url: form.yelp_url || null,
+      thefork_url: form.thefork_url || null,
       platform_priority: form.platform_priority,
       owner_email: form.owner_email,
       config: {
@@ -240,6 +246,28 @@ export default function SettingsPage() {
                   </label>
                   <input type="url" value={form.trustpilot_url} onChange={f('trustpilot_url')}
                     placeholder="https://www.trustpilot.com/review/..." className={inputClass} />
+                </div>
+
+                <div className="pt-3 mt-2 border-t border-gray-200">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                    Portails managers <span className="text-gray-400 normal-case font-normal">— pour la réponse aux avis uniquement</span>
+                  </p>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        🔴 URL Yelp Business <span className="text-gray-400">(optionnel — pas de sollicitation, CGU Yelp)</span>
+                      </label>
+                      <input type="url" value={form.yelp_url} onChange={f('yelp_url')}
+                        placeholder="https://biz.yelp.com/biz_info/..." className={inputClass} />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        🍴 URL TheFork Manager <span className="text-gray-400">(optionnel — sollicitation auto par TheFork)</span>
+                      </label>
+                      <input type="url" value={form.thefork_url} onChange={f('thefork_url')}
+                        placeholder="https://manager.thefork.com/..." className={inputClass} />
+                    </div>
+                  </div>
                 </div>
               </div>
 

@@ -37,6 +37,18 @@
 | `N8N_WEBHOOK_URL` | Vercel + `.env.local` | 🟡 Server-only, à protéger |
 | `SUPABASE_SERVICE_ROLE_KEY` | n8n uniquement | 🔴 **Jamais** dans le repo ni Vercel |
 
+## 🌐 Plateformes — règles d'intégration
+
+| Plateforme | Sollicitation | Réponse | Notes |
+|------------|---------------|---------|-------|
+| **Google** | ✅ Email auto | ✅ API native | OAuth2 — postage automatique possible |
+| **TripAdvisor** | ✅ Email auto | 📋 Copier-coller | Pas d'API publique de réponse |
+| **TrustPilot** | ✅ Email auto | 📋 Copier-coller | Pas d'API publique de réponse |
+| **Yelp** | 🚫 **Interdit** | 📋 Copier-coller | CGU Yelp "Don't Ask" → risque de filtrage des avis |
+| **TheFork** | 🚫 **Redondant** | 📋 Copier-coller | TheFork envoie ses propres emails post-réservation |
+
+**Règle :** ne jamais inclure Yelp ou TheFork dans le Workflow A (sollicitation). Aucun stockage de credentials de plateforme dans Supabase — l'utilisateur s'authentifie via le password manager de son navigateur en ouvrant l'URL du portail manager.
+
 ## 🚨 En cas d'incident
 
 1. **Fuite de la clé anon** : régénérer dans Supabase Studio → Settings → API

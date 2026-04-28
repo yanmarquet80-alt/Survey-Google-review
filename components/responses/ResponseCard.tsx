@@ -22,6 +22,18 @@ const PLATFORM_CONFIG: Record<Platform, { label: string; icon: string; badgeClas
     badgeClass: 'bg-green-100 text-green-700 border border-green-200',
     linkLabel: 'Ouvrir TrustPilot',
   },
+  yelp: {
+    label: 'Yelp',
+    icon: '🔴',
+    badgeClass: 'bg-red-100 text-red-700 border border-red-200',
+    linkLabel: 'Ouvrir Yelp Biz',
+  },
+  thefork: {
+    label: 'TheFork',
+    icon: '🍴',
+    badgeClass: 'bg-orange-100 text-orange-700 border border-orange-200',
+    linkLabel: 'Ouvrir TheFork Manager',
+  },
 }
 
 const SENTIMENT_CONFIG: Record<ReviewSentiment, { label: string; badgeClass: string; leftBorder: string }> = {
@@ -82,6 +94,19 @@ export function ResponseCard({ response, onStatusChange }: Props) {
     await navigator.clipboard.writeText(response.reply_text)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  async function handleCopyAndOpen(url: string) {
+    if (response.reply_text) {
+      try {
+        await navigator.clipboard.writeText(response.reply_text)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2500)
+      } catch {
+        // clipboard may fail silently — still open the portal
+      }
+    }
+    window.open(url, '_blank', 'noopener,noreferrer')
   }
 
   async function handleStatus(status: 'published' | 'dismissed' | 'pending') {
@@ -200,14 +225,13 @@ export function ResponseCard({ response, onStatusChange }: Props) {
         )}
 
         {response.manage_url && (
-          <a
-            href={response.manage_url}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={() => handleCopyAndOpen(response.manage_url!)}
             className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg transition-all shadow-sm border ${platform.badgeClass} hover:opacity-80`}
+            title={response.reply_text ? 'Copie la réponse + ouvre la plateforme' : 'Ouvrir la plateforme'}
           >
-            🔗 {platform.linkLabel}
-          </a>
+            {response.reply_text ? '📋🔗' : '🔗'} {platform.linkLabel}
+          </button>
         )}
 
         <div className="flex-1" />
