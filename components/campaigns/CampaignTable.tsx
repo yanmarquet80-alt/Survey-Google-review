@@ -14,9 +14,11 @@ const TABS: { label: string; value: CampaignStatus | 'all' }[] = [
 ]
 
 const PLATFORM_BADGE: Record<Platform, { label: string; classes: string }> = {
-  google: { label: 'Google', classes: 'bg-blue-100 text-blue-700' },
+  google:      { label: 'Google',      classes: 'bg-blue-100 text-blue-700' },
   tripadvisor: { label: 'TripAdvisor', classes: 'bg-teal-100 text-teal-700' },
-  trustpilot: { label: 'TrustPilot', classes: 'bg-green-100 text-green-700' },
+  trustpilot:  { label: 'TrustPilot',  classes: 'bg-green-100 text-green-700' },
+  yelp:        { label: 'Yelp',        classes: 'bg-red-100 text-red-700' },
+  thefork:     { label: 'TheFork',     classes: 'bg-orange-100 text-orange-700' },
 }
 
 function PlatformBadge({ platform }: { platform: Platform }) {

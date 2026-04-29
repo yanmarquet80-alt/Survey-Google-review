@@ -2,16 +2,20 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import type { Business, Platform } from '@/lib/types'
+import type { Business } from '@/lib/types'
 import { PageHeader } from '@/components/PageHeader'
 
-const PLATFORM_LABELS: Record<Platform, { label: string; icon: string; color: string }> = {
+// Sollicitation = Google / TripAdvisor / TrustPilot uniquement
+// (Yelp interdit par CGU, TheFork auto-géré)
+type SolicitationPlatform = 'google' | 'tripadvisor' | 'trustpilot'
+
+const PLATFORM_LABELS: Record<SolicitationPlatform, { label: string; icon: string; color: string }> = {
   google: { label: 'Google', icon: '🔵', color: 'bg-blue-50 border-blue-200 text-blue-700' },
   tripadvisor: { label: 'TripAdvisor', icon: '🟢', color: 'bg-teal-50 border-teal-200 text-teal-700' },
   trustpilot: { label: 'TrustPilot', icon: '✅', color: 'bg-green-50 border-green-200 text-green-700' },
 }
 
-function getEffectivePlatform(biz: Business): Platform {
+function getEffectivePlatform(biz: Business): SolicitationPlatform {
   const p = biz.platform_priority ?? 'google'
   if (p === 'tripadvisor' && biz.tripadvisor_url) return 'tripadvisor'
   if (p === 'trustpilot' && biz.trustpilot_url) return 'trustpilot'
@@ -21,8 +25,8 @@ function getEffectivePlatform(biz: Business): Platform {
   return 'google'
 }
 
-function getAvailablePlatforms(biz: Business): Platform[] {
-  const available: Platform[] = []
+function getAvailablePlatforms(biz: Business): SolicitationPlatform[] {
+  const available: SolicitationPlatform[] = []
   if (biz.google_review_url) available.push('google')
   if (biz.tripadvisor_url) available.push('tripadvisor')
   if (biz.trustpilot_url) available.push('trustpilot')
@@ -31,15 +35,15 @@ function getAvailablePlatforms(biz: Business): Platform[] {
 
 export default function SendPage() {
   const [businesses, setBusinesses] = useState<Business[]>([])
-  const [form, setForm] = useState({ business_id: '', client_name: '', client_email: '', client_phone: '', platform_override: '' as Platform | '' })
+  const [form, setForm] = useState({ business_id: '', client_name: '', client_email: '', client_phone: '', platform_override: '' as SolicitationPlatform | '' })
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<{ success: boolean; message: string } | null>(null)
 
   const selectedBusiness = businesses.find(b => b.id === form.business_id) ?? null
-  const effectivePlatform: Platform = selectedBusiness
+  const effectivePlatform: SolicitationPlatform = selectedBusiness
     ? (form.platform_override || getEffectivePlatform(selectedBusiness))
     : 'google'
-  const availablePlatforms: Platform[] = selectedBusiness ? getAvailablePlatforms(selectedBusiness) : []
+  const availablePlatforms: SolicitationPlatform[] = selectedBusiness ? getAvailablePlatforms(selectedBusiness) : []
 
   useEffect(() => {
     const supabase = createClient()
@@ -125,7 +129,7 @@ export default function SendPage() {
                 {availablePlatforms.length > 1 && (
                   <select
                     value={form.platform_override}
-                    onChange={e => setForm(f => ({ ...f, platform_override: e.target.value as Platform | '' }))}
+                    onChange={e => setForm(f => ({ ...f, platform_override: e.target.value as SolicitationPlatform | '' }))}
                     className="text-xs border border-current/30 rounded-lg px-2 py-1 bg-transparent focus:outline-none"
                   >
                     <option value="">Par défaut</option>
