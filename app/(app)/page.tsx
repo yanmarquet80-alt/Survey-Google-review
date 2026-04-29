@@ -127,7 +127,7 @@ export default async function OverviewPage() {
           {/* Stats par plateforme */}
           <h3 className="text-sm font-semibold text-gray-600 uppercase tracking-wider mb-3">Par plateforme</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            {(['google', 'tripadvisor', 'trustpilot'] as Platform[]).map(p => {
+            {(['google', 'tripadvisor', 'trustpilot'] as const).map(p => {
               const cfg = PLATFORM_CONFIG[p]
               const ps = stats.by_platform[p]
               return (
