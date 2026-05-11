@@ -57,3 +57,31 @@ create index if not exists review_campaigns_reminder_idx
 -- Index pour filtres dashboard
 create index if not exists review_campaigns_business_idx
   on review_campaigns(business_id, status);
+
+-- 4. Réponses aux avis (générées par l'IA, validées dans le Dashboard)
+create table if not exists review_responses (
+  id                uuid primary key default gen_random_uuid(),
+  business_id       uuid not null references review_businesses(id) on delete cascade,
+  platform          text not null,
+  -- valeurs: google | tripadvisor | trustpilot | yelp | thefork
+  reviewer_name     text,
+  reviewer_rating   integer,
+  review_text       text,
+  review_date       timestamptz,
+  sentiment         text,
+  -- valeurs: positive | mixed | neutral | negative | crisis
+  reply_text        text,
+  manage_url        text,
+  gbp_review_name   text,
+  -- Format: accounts/{accountId}/locations/{locationId}/reviews/{reviewId}
+  -- Requis pour la publication automatique via l'API GBP (workflow gbp-publish-reply)
+  status            text not null default 'pending',
+  -- valeurs: pending | published | dismissed
+  published_at      timestamptz,
+  created_at        timestamptz not null default now(),
+  updated_at        timestamptz not null default now()
+);
+
+-- Index pour lecture rapide du Dashboard (filtres business + statut)
+create index if not exists idx_review_responses_business_status
+  on review_responses (business_id, status);

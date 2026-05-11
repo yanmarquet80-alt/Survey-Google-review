@@ -72,17 +72,24 @@ export function Sidebar({ userEmail, isAdmin }: SidebarProps) {
 
       {/* User info + sign out */}
       <div className="px-4 py-4 border-t border-gray-700/60 space-y-2">
-        <div className="flex items-center gap-2">
+        <Link
+          href="/account"
+          className={`flex items-center gap-2 -mx-2 px-2 py-1.5 rounded-lg transition-colors group ${
+            path === '/account' ? 'bg-gray-800' : 'hover:bg-gray-800'
+          }`}
+          title="Mon compte"
+        >
           <div className="w-7 h-7 rounded-full bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-300 shrink-0">
             {userEmail.charAt(0).toUpperCase()}
           </div>
-          <div className="min-w-0">
-            <p className="text-xs text-gray-300 truncate">{userEmail}</p>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-gray-300 truncate group-hover:text-white transition-colors">{userEmail}</p>
             {isAdmin && (
               <p className="text-xs text-amber-400 font-semibold">Admin</p>
             )}
           </div>
-        </div>
+          <span className="text-gray-500 group-hover:text-gray-300 transition-colors text-xs">⚙</span>
+        </Link>
         <form action={signOut}>
           <button
             type="submit"

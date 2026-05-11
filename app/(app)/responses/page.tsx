@@ -81,9 +81,9 @@ export default function ResponsesPage() {
           </span>
         ) : undefined}
         tutorial={[
-          { icon: '📋', label: 'Copier la réponse' },
-          { icon: '🔗', label: 'Coller sur la plateforme' },
-          { icon: '✅', label: 'Marquer comme publié' },
+          { icon: '✍️', label: "Lire la proposition IA" },
+          { icon: '🚀', label: 'Publier sur GBP (Google)' },
+          { icon: '📋', label: 'Copier-coller (autres plateformes)' },
         ]}
       />
 

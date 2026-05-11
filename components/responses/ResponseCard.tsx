@@ -82,12 +82,15 @@ interface Props {
 export function ResponseCard({ response, onStatusChange }: Props) {
   const [copied, setCopied] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [publishError, setPublishError] = useState<string | null>(null)
 
   const platform = PLATFORM_CONFIG[response.platform]
   const sentiment = SENTIMENT_CONFIG[response.sentiment]
   const isCrisis = response.sentiment === 'crisis'
   const isPublished = response.status === 'published'
   const isDismissed = response.status === 'dismissed'
+  // Publication automatique via API GBP : uniquement pour Google avec gbp_review_name
+  const canAutoPublish = response.platform === 'google' && !!response.gbp_review_name
 
   async function handleCopy() {
     if (!response.reply_text) return
@@ -118,6 +121,28 @@ export function ResponseCard({ response, onStatusChange }: Props) {
         body: JSON.stringify({ status }),
       })
       onStatusChange(response.id, status)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function handlePublishGbp() {
+    setLoading(true)
+    setPublishError(null)
+    try {
+      const r = await fetch(`/api/responses/${response.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'publish' }),
+      })
+      const data = await r.json()
+      if (!r.ok || !data.success) {
+        setPublishError(data.error || `Erreur ${r.status}`)
+        return
+      }
+      onStatusChange(response.id, 'published')
+    } catch (e) {
+      setPublishError(e instanceof Error ? e.message : 'Erreur réseau')
     } finally {
       setLoading(false)
     }
@@ -213,6 +238,24 @@ export function ResponseCard({ response, onStatusChange }: Props) {
         )}
       </div>
 
+      {/* Erreur publication GBP */}
+      {publishError && (
+        <div className="mx-5 mb-3 rounded-lg bg-red-50 border border-red-200 px-4 py-2.5 text-xs text-red-700 flex items-start gap-2">
+          <span className="mt-0.5">⚠️</span>
+          <div className="flex-1">
+            <p className="font-semibold">Échec de la publication sur GBP</p>
+            <p className="text-red-600 mt-0.5">{publishError}</p>
+          </div>
+          <button
+            onClick={() => setPublishError(null)}
+            className="text-red-400 hover:text-red-600 text-base leading-none"
+            title="Fermer"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       {/* Actions */}
       <div className="flex flex-wrap items-center gap-2 px-5 py-3 border-t border-gray-100 bg-gray-50/40 rounded-b-xl">
         {!isCrisis && !isPublished && (
@@ -236,11 +279,23 @@ export function ResponseCard({ response, onStatusChange }: Props) {
 
         <div className="flex-1" />
 
-        {!isPublished && !isDismissed && !isCrisis && (
+        {!isPublished && !isDismissed && !isCrisis && canAutoPublish && (
+          <button
+            onClick={handlePublishGbp}
+            disabled={loading}
+            className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-colors disabled:opacity-50 shadow-sm"
+            title="Publication automatique via l'API Google Business Profile"
+          >
+            {loading ? '⏳ Publication…' : '🚀 Publier sur GBP'}
+          </button>
+        )}
+
+        {!isPublished && !isDismissed && !isCrisis && !canAutoPublish && (
           <button
             onClick={() => handleStatus('published')}
             disabled={loading}
             className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white transition-colors disabled:opacity-50 shadow-sm"
+            title="Marquer manuellement comme publié (copier-coller requis)"
           >
             ✅ Marquer comme publié
           </button>

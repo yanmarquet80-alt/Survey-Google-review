@@ -74,6 +74,7 @@ export interface ReviewResponse {
   sentiment: ReviewSentiment
   reply_text: string | null
   manage_url: string | null
+  gbp_review_name: string | null
   status: ResponseStatus
   published_at: string | null
   created_at: string
